@@ -4,18 +4,30 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.inventory.data.ItemContract.ItemEntry;
 import com.example.android.inventory.data.ItemDbHelper;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class InventoryActivity extends AppCompatActivity {
+
+    /** tag for log messages */
+    public static final String LOG = InventoryActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +44,15 @@ public class InventoryActivity extends AppCompatActivity {
             }
         });
 
+        enableStrictMode();
 
+        Drawable image = loadImageFromWeb("http://ep.yimg.com/ay/yhst-51964671464679/latex-free-exercise-bands-150-feet-6.gif");
+        ImageView imageView = (ImageView) findViewById(R.id.image);
+        imageView.setImageDrawable(image);
         // TODO: SQLite database setup. Next steps are: 1. to setup storage of images into the database
         // TODO: 2. Setup content provider to manage uri requests
+
+
     }
 
     @Override
@@ -95,5 +113,27 @@ public class InventoryActivity extends AppCompatActivity {
 
         TextView textView = (TextView) findViewById(R.id.list);
         textView.setText("The item name is " + mItemName);
+    }
+
+    /** Method that takes in a url of an image to return a Drawable object of that image.
+     * Permission to access internet asked for in AndroidManifest.xml file */
+    public static Drawable loadImageFromWeb(String url) {
+        try {
+            InputStream inputStream = (InputStream) new URL(url).getContent();
+            Drawable drawable = Drawable.createFromStream(inputStream, "src name");
+            return drawable;
+        } catch (MalformedURLException e) {
+            Log.i(LOG, "MalformedURLException caught");
+            return null;
+        } catch (IOException e) {
+            Log.i(LOG, "IOException caught");
+            return null;
+        }
+    }
+
+    // class to temporarily work around NetworkOnMainThread exception
+    public void enableStrictMode() {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
     }
 }
