@@ -152,7 +152,7 @@ public class InventoryActivity extends AppCompatActivity {
 
     private void insertImageToDb(String url) {
         try {
-            // .openInputStream should replace the .openConnection()
+            // .openInputStream should replace the .openConnection()??
             // URI uri = new URI(url);
             // InputStream iStream = getContentResolver().openInputStream(uri); // ContentProvider not yet setup
 
