@@ -21,5 +21,8 @@
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
 
+    <string name="image_insert_successful">Image successfully saved to database</string>
+    <string name="image_query_unsuccessful">Image query unsuccessful</string>
+
 
 </resources>
