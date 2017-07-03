@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
@@ -58,12 +59,6 @@ public class InventoryActivity extends AppCompatActivity {
         Drawable image = loadImageFromWeb("http://ep.yimg.com/ay/yhst-51964671464679/latex-free-exercise-bands-150-feet-6.gif");
         ImageView imageView = (ImageView) findViewById(R.id.image);
         imageView.setImageDrawable(image);
-        // TODO: SQLite database setup. Next steps are: 1. to setup storage of images into the database
-        // Need to test whether image is successfully inserted into database
-        // Code for retrieving image
-        // TODO: 2. Setup content provider to manage uri requests
-
-
     }
 
     @Override
@@ -85,7 +80,7 @@ public class InventoryActivity extends AppCompatActivity {
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                //Uri uri = Uri.parse("http://www.hat-trick-sports.com/shop/media/ecom/prodlg/evo2.jpg");
+                // insertImageToDb() method temporarily placed here as a way to test that the method works
                 insertImageToDb("http://www.hat-trick-sports.com/shop/media/ecom/prodlg/evo2.jpg");
                 getImageFromDb();
                 // Pop up confirmation dialog for deleting all pets
@@ -96,31 +91,21 @@ public class InventoryActivity extends AppCompatActivity {
     }
 
     public void insertDummyData() {
-        // writable database is suitable for reading and writing into
-        SQLiteDatabase database = mItemDbHelper.getWritableDatabase();
-
-        // Placeholder data until content provider and then cursoradapters are setup properly
+        // Placeholder data until content provider and then cursorAdapters are setup properly
         ContentValues values = new ContentValues();
         values.put(ItemEntry.COLUMN_ITEM_NAME, "Theraband");
         values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, "DJO Global");
-        values.put(ItemEntry.COLUMN_ITEM_PRICE, "5");
-        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, "10");
+        values.put(ItemEntry.COLUMN_ITEM_PRICE, 5);
+        values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 10);
         // insert this placeholder data into the database
-        long insertId = database.insert(ItemEntry.TABLE_NAME, null, values);
-
-        if (insertId == -1) {
-            Log.e(LOG, "Failed to insert dummy data");
-            return;
-        }
+        Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
 
         // Projection of the columns form the database for the query to return
         String[] columnsWanted = {
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME };
-        // selection is the id of the row we just inserted
-        String selection = ItemEntry._ID + " = " + insertId;
-        Cursor queryCursor = database.query(ItemEntry.TABLE_NAME, columnsWanted, selection,
-                null, null, null, null);
+
+        Cursor queryCursor = getContentResolver().query(newUri, columnsWanted, null, null, null);
         // Extract the name: find column index of "name" column then getString
         queryCursor.moveToFirst();
         String mItemName = "";

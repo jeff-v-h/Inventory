@@ -20,7 +20,16 @@
         <activity android:name=".EditorActivity"
             android:theme="@style/EditorTheme"
             android:label="@string/editor_label"
-            android:parentActivityName=".InventoryActivity"></activity>
+            android:parentActivityName=".InventoryActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".InventoryActivity" />
+        </activity>
+        <provider
+            android:name=".data.ItemProvider"
+            android:authorities="com.example.android.inventory"
+            android:exported="false" />
     </application>
 
 </manifest>
