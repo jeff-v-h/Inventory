@@ -1,41 +1,37 @@
 package com.example.android.inventory;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.android.inventory.data.ItemContract.ItemEntry;
 import com.example.android.inventory.data.ItemDbHelper;
-import com.example.android.inventory.data.Utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
-public class InventoryActivity extends AppCompatActivity {
+public class InventoryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /** tag for log messages */
     public static final String LOG = InventoryActivity.class.getSimpleName();
 
-    ItemDbHelper mItemDbHelper;
+    private ItemDbHelper mItemDbHelper;
+
+    private static final int ITEM_LOADER = 0;
+
+    private ItemCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +50,25 @@ public class InventoryActivity extends AppCompatActivity {
 
         mItemDbHelper = new ItemDbHelper(this);
 
-        enableStrictMode();
+        ListView itemListView = (ListView) findViewById(R.id.list);
 
-        Drawable image = loadImageFromWeb("http://ep.yimg.com/ay/yhst-51964671464679/latex-free-exercise-bands-150-feet-6.gif");
+        /* Drawable image = loadImageFromWeb("http://ep.yimg.com/ay/yhst-51964671464679/latex-free-exercise-bands-150-feet-6.gif");
         ImageView imageView = (ImageView) findViewById(R.id.image);
-        imageView.setImageDrawable(image);
+        imageView.setImageDrawable(image); */
+
+        // Setup the adapter with a null cursor to begin with. If there is data in the database,
+        // the CursorLoader will swap in with cursor containing the data
+        mCursorAdapter = new ItemCursorAdapter(this, null);
+        itemListView.setAdapter(mCursorAdapter);
+
+        // Initialise the LoaderManager
+        getLoaderManager().initLoader(ITEM_LOADER, null, this);
+
+        // TODO: 7/07/2017 EditorActivity to be able to add items and insert into database via contentresolver
+
+        // TODO: 8/07/2017 Change image methods below to be able to change images into blobs that
+        // can then be saved into content values before being sent into database. Methods should
+        // go into EditorActivity. That is where photos will be uploaded
     }
 
     @Override
@@ -76,15 +86,12 @@ public class InventoryActivity extends AppCompatActivity {
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertDummyData();
-                //getSupportLoaderManager().initLoader(PET_LOADER, null, this);
+                getLoaderManager().initLoader(ITEM_LOADER, null, this);
                 return true;
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // insertImageToDb() method temporarily placed here as a way to test that the method works
-                insertImageToDb("http://www.hat-trick-sports.com/shop/media/ecom/prodlg/evo2.jpg");
-                getImageFromDb();
                 // Pop up confirmation dialog for deleting all pets
-                // showDeleteAllConfirmationDialog();
+                showDeleteAllConfirmationDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -99,101 +106,69 @@ public class InventoryActivity extends AppCompatActivity {
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 10);
         // insert this placeholder data into the database
         Uri newUri = getContentResolver().insert(ItemEntry.CONTENT_URI, values);
-
-        // Projection of the columns form the database for the query to return
-        String[] columnsWanted = {
-                ItemEntry._ID,
-                ItemEntry.COLUMN_ITEM_NAME };
-
-        Cursor queryCursor = getContentResolver().query(newUri, columnsWanted, null, null, null);
-        // Extract the name: find column index of "name" column then getString
-        queryCursor.moveToFirst();
-        String mItemName = "";
-        if (queryCursor.moveToFirst()) {
-            int nameColumnIndex = queryCursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
-            mItemName = queryCursor.getString(nameColumnIndex);
-        }
-
-        TextView textView = (TextView) findViewById(R.id.list);
-        textView.setText("The item name is " + mItemName);
-        queryCursor.close();
     }
 
-    /** Method that takes in a url of an image to return a Drawable object of that image.
-     * Permission to access internet asked for in AndroidManifest.xml file */
-    public static Drawable loadImageFromWeb(String url) {
-        try {
-            InputStream inputStream = (InputStream) new URL(url).getContent();
-            Drawable drawable = Drawable.createFromStream(inputStream, "src name");
-            return drawable;
-        } catch (MalformedURLException e) {
-            Log.e(LOG, "MalformedURLException caught");
-            return null;
-        } catch (IOException e) {
-            Log.e(LOG, "IOException caught");
-            return null;
-        }
+    private void showDeleteAllConfirmationDialog() {
+        // Create an AlertDialog.Builder. Set the message and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_all_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button
+                int rowsDeleted = getContentResolver().delete(ItemEntry.CONTENT_URI, null, null);
+                if (rowsDeleted > 0) {
+                    Toast.makeText(InventoryActivity.this, getString(R.string.inventory_deleted_all),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked "Cancel" button, so dismiss dialog
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
-    private void insertImageToDb(String url) {
-        try {
-            // .openInputStream should replace the .openConnection()??
-            // URI uri = new URI(url);
-            // InputStream iStream = getContentResolver().openInputStream(uri); // ContentProvider not yet setup
-
-            // Bitmap icon = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.aso_ankle_brace);
-
-            // open connection to a string url then convert into an inputStream
-            URL imageUrl = new URL(url);
-            URLConnection uCon = imageUrl.openConnection();
-            InputStream is = uCon.getInputStream();
-
-            // convert the inputStream of image into a byte array to be stored into the database
-            byte[] inputData = Utils.convertImageInputStreamToByteArray(is);
-            mItemDbHelper.insertImage(inputData); //.insertImage() already includes .getReadableDatabase()
-            Toast.makeText(getApplicationContext(), R.string.image_insert_successful,
-                    Toast.LENGTH_SHORT).show();
-            mItemDbHelper.close();
-        } catch (Exception e) {
-            Log.e(LOG, "insertImageToDb method error: " + e.getLocalizedMessage());
-            mItemDbHelper.close();
-        }
-    }
-
-    // Temporary method to test retrieving image from database and setting into the imageView
-    private void getImageFromDb() {
-        // Access database and query to get a cursor back for the wanted image
-        SQLiteDatabase database = mItemDbHelper.getReadableDatabase();
-        String[] columnsWanted = {
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection = {
                 ItemEntry._ID,
                 ItemEntry.COLUMN_ITEM_NAME,
-                ItemEntry.COLUMN_ITEM_IMAGE
-        };
-        // selection is the row we want ie. the row with name "Temporary testing data"
-        // SQLite statement: SELECT _id, name, image FROM items WHERE name LIKE 'Temporary testing data'
-        String selection = ItemEntry.COLUMN_ITEM_NAME + " LIKE " + "'" + "Temporary testing data" + "'";
-        Cursor cursor = database.query(ItemEntry.TABLE_NAME, columnsWanted, selection, null,
-                null, null, null);
-
-        // Retrieve the byte array (blob) data from the cursor
-        cursor.moveToFirst();
-        if (cursor.moveToFirst()) {
-            int imageColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
-            byte[] imageByteArray = cursor.getBlob(imageColumnIndex);
-            Bitmap image = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
-            ImageView imageView = (ImageView) findViewById(R.id.image);
-            imageView.setImageBitmap(image);
-        } else {
-            Toast.makeText(getApplicationContext(), R.string.image_query_unsuccessful,
-                    Toast.LENGTH_SHORT).show();
+                ItemEntry.COLUMN_ITEM_SUPPLIER,
+                ItemEntry.COLUMN_ITEM_PRICE,
+                ItemEntry.COLUMN_ITEM_QUANTITY,
+                ItemEntry.COLUMN_ITEM_IMAGE };
+        // Takes action based on the ID of the loader that's being created
+        switch (id) {
+            case ITEM_LOADER:
+                // Returns a new CursorLoader
+                return new CursorLoader(this, ItemEntry.CONTENT_URI, projection, null, null, null);
+            default:
+                Log.i(LOG, "An invalid id was passed in for CursorLoader");
+                return null;
         }
-        mItemDbHelper.close();
-        cursor.close();
     }
 
-    // class to temporarily work around NetworkOnMainThread exception
-    public void enableStrictMode() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Swap the new cursor in
+        mCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // This is called when the last Cursor provided to onLoadFinished()
+        // above is about to be closed.  We need to make sure we are no
+        // longer using it.
+        mCursorAdapter.swapCursor(null);
     }
 }

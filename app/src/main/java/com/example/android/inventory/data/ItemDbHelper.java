@@ -1,6 +1,5 @@
 package com.example.android.inventory.data;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -41,14 +40,5 @@ public class ItemDbHelper extends SQLiteOpenHelper {
         // to simply to discard the data and start over
         db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
-    }
-
-    public void insertImage(byte[] imageBytes) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(ItemEntry.COLUMN_ITEM_IMAGE, imageBytes);
-        cv.put(ItemEntry.COLUMN_ITEM_NAME, "Temporary testing data"); // Temporary test line
-        cv.put(ItemEntry.COLUMN_ITEM_PRICE, 5); //Temporary test line
-        db.insert(ItemEntry.TABLE_NAME, null, cv);
     }
 }

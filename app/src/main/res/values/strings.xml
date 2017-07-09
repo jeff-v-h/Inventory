@@ -23,6 +23,15 @@
 
     <string name="image_insert_successful">Image successfully saved to database</string>
     <string name="image_query_unsuccessful">Image query unsuccessful</string>
+    <string name="unknown_supplier">Supplier not known</string>
+    <string name="category_image">Image</string>
+    <string name="button_image">Select image</string>
+    <string name="image_not_picked">An image has not been selected</string>
+    <string name="image_select_unsuccessful">Image selection unsuccessful</string>
+    <string name="delete_all_dialog_msg">Delete all pets?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="inventory_deleted_all">All items deleted</string>
 
 
 </resources>

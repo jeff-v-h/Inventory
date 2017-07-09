@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.inventory.data.ItemContract.ItemEntry;
 
@@ -115,12 +116,15 @@ public class ItemProvider extends ContentProvider {
         Integer price = values.getAsInteger(ItemEntry.COLUMN_ITEM_PRICE);
         Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
         if (name == null) {
+            Toast.makeText(getContext(), "Item requires a name", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Item requires a name");
         }
         if (price == null || price < 0) {
+            Toast.makeText(getContext(), "Item requires valid price", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Item requires valid price");
         }
         if (quantity == null || quantity < 0) {
+            Toast.makeText(getContext(), "Item requires valid quantity", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Item requires valid quantity");
         }
 
