@@ -1,6 +1,7 @@
 package com.example.android.inventory;
 
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -16,18 +17,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.android.inventory.data.ItemContract.ItemEntry;
-import com.example.android.inventory.data.ItemDbHelper;
 
 public class InventoryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /** tag for log messages */
     public static final String LOG = InventoryActivity.class.getSimpleName();
-
-    private ItemDbHelper mItemDbHelper;
 
     private static final int ITEM_LOADER = 0;
 
@@ -48,27 +47,30 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
             }
         });
 
-        mItemDbHelper = new ItemDbHelper(this);
-
         ListView itemListView = (ListView) findViewById(R.id.list);
-
-        /* Drawable image = loadImageFromWeb("http://ep.yimg.com/ay/yhst-51964671464679/latex-free-exercise-bands-150-feet-6.gif");
-        ImageView imageView = (ImageView) findViewById(R.id.image);
-        imageView.setImageDrawable(image); */
-
         // Setup the adapter with a null cursor to begin with. If there is data in the database,
         // the CursorLoader will swap in with cursor containing the data
         mCursorAdapter = new ItemCursorAdapter(this, null);
         itemListView.setAdapter(mCursorAdapter);
 
+        itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
+                // NOTE: id starts at 1 similar to _ID column in database table
+                // Form content URI that represents specific item that was clicked on
+                // i.e "content://com.example.android.inventory/items/#" where # = id of item
+                Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+                // add URI data for the URI to be sent with the intent.
+                // Will be accessed with .getData() in the EditorActivity
+                intent.setData(currentItemUri);
+
+                startActivity(intent);
+            }
+        });
+
         // Initialise the LoaderManager
         getLoaderManager().initLoader(ITEM_LOADER, null, this);
-
-        // TODO: 7/07/2017 EditorActivity to be able to add items and insert into database via contentresolver
-
-        // TODO: 8/07/2017 Change image methods below to be able to change images into blobs that
-        // can then be saved into content values before being sent into database. Methods should
-        // go into EditorActivity. That is where photos will be uploaded
     }
 
     @Override

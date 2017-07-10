@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Utility class to help with processing images
@@ -33,16 +31,4 @@ public class Utils {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
-    /** Once an input stream is obtained from an image uri, convert it to a byte array */
-    public static byte[] convertImageInputStreamToByteArray(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
-    }
 }

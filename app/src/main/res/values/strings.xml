@@ -32,6 +32,18 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="inventory_deleted_all">All items deleted</string>
+    <string name="editor_title_create_new">Create a New Item</string>
+    <string name="editor_title_edit_item">Edit Item</string>
+    <string name="editor_item_insert_successful">Item saved successfully</string>
+    <string name="editor_item_insert_unsuccessful">Error with inserting item</string>
+    <string name="editor_item_update_unsuccessful">Item not updated</string>
+    <string name="editor_item_update_successful">Item successfully updated</string>
+    <string name="delete_dialog_msg">Delete this item?</string>
+    <string name="editor_delete_item_failed">Error with deleting item</string>
+    <string name="editor_delete_item_successful">Item deleted</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
 
 
 </resources>
