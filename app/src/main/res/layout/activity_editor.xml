@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/activity_margin"
-    tools:context=".EditorActivity">
+    tools:context=".DetailActivity">
 
     <!-- Overview category -->
     <LinearLayout
@@ -17,30 +17,30 @@
 
         <!-- Label -->
         <TextView
-            android:text="@string/category_overview"
-            style="@style/CategoryStyle" />
+            style="@style/CategoryStyle"
+            android:text="@string/category_overview" />
 
         <!-- Input fields -->
         <LinearLayout
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:paddingLeft="4dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="4dp">
 
             <!-- Product Name field -->
             <EditText
                 android:id="@+id/edit_product_name"
+                style="@style/EditorFieldStyle"
                 android:hint="@string/hint_product_name"
-                android:inputType="textCapWords"
-                style="@style/EditorFieldStyle" />
+                android:inputType="textCapWords" />
 
             <!-- Supplier field -->
             <EditText
                 android:id="@+id/edit_supplier"
+                style="@style/EditorFieldStyle"
                 android:hint="@string/hint_supplier"
-                android:inputType="textCapWords"
-                style="@style/EditorFieldStyle" />
+                android:inputType="textCapWords" />
         </LinearLayout>
     </LinearLayout>
 
@@ -109,5 +109,40 @@
                 style="@style/EditorFieldStyle" />
 
         </RelativeLayout>
+    </LinearLayout>
+
+    <!-- Image category -->
+    <LinearLayout
+        android:id="@+id/container_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Label -->
+        <TextView
+            android:text="@string/category_image"
+            style="@style/CategoryStyle" />
+
+        <!-- Input fields -->
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:paddingLeft="4dp"
+            android:orientation="vertical">
+
+            <!-- Select image button -->
+            <Button
+                android:id="@+id/edit_image_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_image"/>
+
+            <ImageView
+                android:id="@+id/edit_image_view"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:scaleType="fitCenter"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

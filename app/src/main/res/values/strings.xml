@@ -1,19 +1,26 @@
 <resources>
     <!-- Labels on Appbar -->
     <string name="app_name">Inventory</string>
-    <string name="editor_label">Add An Item</string>
+    <string name="editor_label">Details</string>
+    <string name="editor_title_create_new">Create a New Item</string>
+    <string name="editor_title_edit_item">Details</string>
 
-    <!-- Labels in EditorActivity -->
-    <string name="price_per_unit">Price per unit:</string>
+    <!-- InventoryActivity/ItemCursorAdapter -->
+    <string name="unknown_supplier">Supplier not known</string>
+
+    <!-- DetailActivity Labels -->
+    <string name="price_per_unit">Price per \nunit:</string>
     <string name="quantity">Quantity:</string>
     <string name="category_overview">Overview</string>
     <string name="category_price">Price</string>
     <string name="category_quantity">Quantity</string>
+    <string name="category_image">Image</string>
     <string name="hint_product_name">Product</string>
     <string name="hint_supplier">Supplier</string>
     <string name="hint_quantity">Quantity</string>
     <string name="unit_dollar_sign">$</string>
     <string name="hint_dollars">Price in dollars</string>
+    <string name="button_image">Select image</string>
 
     <!-- Options in menu -->
     <string name="action_insert_dummy_data">Insert Dummy Data</string>
@@ -21,5 +28,31 @@
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
 
+    <!-- Database CRUD -->
+    <string name="editor_item_insert_successful">Item saved successfully</string>
+    <string name="editor_item_insert_unsuccessful">Error with inserting item</string>
+    <string name="editor_item_update_unsuccessful">Item not updated</string>
+    <string name="editor_item_update_successful">Item successfully updated</string>
+    <string name="editor_delete_item_failed">Error with deleting item</string>
+    <string name="editor_delete_item_successful">Item deleted</string>
+    <string name="inventory_deleted_all">All items deleted</string>
+
+    <!-- Image functionality -->
+    <string name="image_insert_successful">Image successfully saved to database</string>
+    <string name="image_query_unsuccessful">Image query unsuccessful</string>
+    <string name="image_not_picked">An image has not been selected</string>
+    <string name="image_select_unsuccessful">Image selection unsuccessful</string>
+
+    <!-- Dialog Interface -->
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="discard">Discard</string>
+    <string name="keep_editing">Keep Editing</string>
+    <string name="delete_dialog_msg">Delete this item?</string>
+    <string name="delete_all_dialog_msg">Delete all pets?</string>
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+    <string name="dummy_data_name">Box</string>
+    <string name="dummy_data_supplier">Bunnings Warehouse</string>
+    <string name="product_image_description">Image of the product</string>
 
 </resources>
