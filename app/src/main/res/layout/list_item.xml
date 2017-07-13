@@ -4,37 +4,45 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/activity_margin"
-    android:weightSum="4">
+    android:padding="@dimen/activity_margin" >
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:scaleType="fitCenter"
-        android:layout_weight="1"/>
+        android:contentDescription="@string/product_image_description"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginRight="16dp"
+        android:layout_weight="1.25"
+        android:scaleType="fitCenter" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_marginRight="8dp"
+        android:layout_weight="1.25">
         <TextView
             android:id="@+id/product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:textAppearanceMedium"
+            android:maxEms="5"
+            android:maxLines="1"
+            android:ellipsize="end"
             tools:text="Theraband"/>
         <TextView
             android:id="@+id/supplier"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:textAppearanceSmall"
+            android:maxEms="5"
+            android:maxLines="2"
+            android:ellipsize="end"
             tools:text="DJO Global"/>
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_weight="1">
@@ -50,7 +58,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_weight="1">

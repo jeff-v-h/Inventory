@@ -37,12 +37,12 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
 
-        // Setup FAB to open EditorActivity
+        // Setup FAB to open DetailActivity
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
+                Intent intent = new Intent(InventoryActivity.this, DetailActivity.class);
                 startActivity(intent);
             }
         });
@@ -56,13 +56,13 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
+                Intent intent = new Intent(InventoryActivity.this, DetailActivity.class);
                 // NOTE: id starts at 1 similar to _ID column in database table
                 // Form content URI that represents specific item that was clicked on
                 // i.e "content://com.example.android.inventory/items/#" where # = id of item
                 Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
                 // add URI data for the URI to be sent with the intent.
-                // Will be accessed with .getData() in the EditorActivity
+                // Will be accessed with .getData() in the DetailActivity
                 intent.setData(currentItemUri);
 
                 startActivity(intent);
@@ -102,8 +102,8 @@ public class InventoryActivity extends AppCompatActivity implements LoaderManage
     public void insertDummyData() {
         // Placeholder data until content provider and then cursorAdapters are setup properly
         ContentValues values = new ContentValues();
-        values.put(ItemEntry.COLUMN_ITEM_NAME, "Theraband");
-        values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, "DJO Global");
+        values.put(ItemEntry.COLUMN_ITEM_NAME, getString(R.string.dummy_data_name));
+        values.put(ItemEntry.COLUMN_ITEM_SUPPLIER, getString(R.string.dummy_data_supplier));
         values.put(ItemEntry.COLUMN_ITEM_PRICE, 5);
         values.put(ItemEntry.COLUMN_ITEM_QUANTITY, 10);
         // insert this placeholder data into the database

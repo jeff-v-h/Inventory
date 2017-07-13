@@ -26,7 +26,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.android.inventory.data.ItemContract.ItemEntry;
 import com.example.android.inventory.data.Utils;
 
@@ -35,9 +34,9 @@ import java.io.InputStream;
 /**
  * Allows user to create a new item or edit an existing one.
  */
-public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG = EditorActivity.class.getSimpleName();
+    private static final String LOG = DetailActivity.class.getSimpleName();
 
     /** EditText fields where the user enters the product's name, supplier, price, quantity & image */
     private EditText mNameEditText;
@@ -73,7 +72,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Get intent and uri if editor started by clicking on an item to update
         Intent intent = getIntent();
         mCurrentItemUri = intent.getData();
-        // Set the title of EditorActivity depending on whether creating or updating item
+        // Set the title of DetailActivity depending on whether creating or updating item
         if (mCurrentItemUri == null) {
             setTitle(R.string.editor_title_create_new);
             // Invalidate options menu so "delete" is not an option when creating new item
@@ -175,7 +174,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 // If the item hasn't changed, continue with navigating up to parent activity
                 // which is the {@link InventoryActivity}.
                 if (!mItemHasChanged) {
-                    NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                    NavUtils.navigateUpFromSameTask(DetailActivity.this);
                     return true;
                 }
 
@@ -187,7 +186,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                                NavUtils.navigateUpFromSameTask(DetailActivity.this);
                             }
                         };
 
@@ -221,14 +220,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             quantityAsInt = Integer.parseInt(quantityString);
         }
 
-        // if an image is selected, convert it to a byte array and also store into content values
-        byte[] imageByteArray = null;
+        // if an image is selected, convert it to a byte array and also store into content values,
+        // otherwise use placeholder image
+        byte[] imageByteArray;
         if (imageDrawable != null) {
-            Log.i(LOG, "Image drawable is NOT null");
             Bitmap selectedImage = imageDrawable.getBitmap();
             imageByteArray = Utils.convertBitmapToByteArray(selectedImage);
         } else {
-            Log.i(LOG, "Image drawable is null");
+            Bitmap placeholderImage = BitmapFactory.decodeResource(this.getResources(),
+                    R.drawable.placeholder_thumbnail);
+            imageByteArray = Utils.convertBitmapToByteArray(placeholderImage);
         }
 
         ContentValues values = new ContentValues();
@@ -304,7 +305,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             mSupplierEditText.setText(supplier);
             mPriceEditText.setText(String.valueOf(price));
             mQuantityEditText.setText(String.valueOf(quantity));
-            Glide.with(getApplicationContext()).load(imageByteArray).into(mImageView);
+
+            if (imageByteArray != null) {
+                Bitmap imageBitmap = Utils.convertByteArrayToBitmap(imageByteArray);
+                mImageView.setImageBitmap(imageBitmap);
+            } else {
+                Bitmap placeholderBitmap =  BitmapFactory.decodeResource(this.getResources(),
+                        R.drawable.placeholder_thumbnail);
+                mImageView.setImageBitmap(placeholderBitmap);
+            }
         }
     }
 
@@ -379,5 +388,28 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Create and show the AlertDialog
         AlertDialog alertdialog = builder.create();
         alertdialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // If the pet hasn't changed, continue with handling back button press
+        if (!mItemHasChanged) {
+            super.onBackPressed();
+            return;
+        }
+
+        // Otherwise if there are unsaved changes, setup a dialog to warn the user.
+        // Create a click listener to handle the user confirming that changes should be discarded.
+        DialogInterface.OnClickListener discardButtonClickListener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // User clicked "Discard" button, close the current activity.
+                        finish();
+                    }
+                };
+
+        // Show dialog that there are unsaved changes
+        showUnsavedChangesDialog(discardButtonClickListener);
     }
 }

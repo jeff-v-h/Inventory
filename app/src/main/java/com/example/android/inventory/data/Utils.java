@@ -27,8 +27,7 @@ public class Utils {
     }
 
     /** Convert the image (as byte array) into Bitmap */
-    public static Bitmap getImage(byte[] image) {
+    public static Bitmap convertByteArrayToBitmap(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
-
 }

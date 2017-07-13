@@ -6,10 +6,13 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.android.inventory.R;
 import com.example.android.inventory.data.ItemContract.ItemEntry;
 
 /**
@@ -115,6 +118,7 @@ public class ItemProvider extends ContentProvider {
         String name = values.getAsString(ItemEntry.COLUMN_ITEM_NAME);
         Integer price = values.getAsInteger(ItemEntry.COLUMN_ITEM_PRICE);
         Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
+        byte[] imageByteArray = values.getAsByteArray(ItemEntry.COLUMN_ITEM_IMAGE);
         if (name == null) {
             Toast.makeText(getContext(), "Item requires a name", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Item requires a name");
@@ -126,6 +130,13 @@ public class ItemProvider extends ContentProvider {
         if (quantity == null || quantity < 0) {
             Toast.makeText(getContext(), "Item requires valid quantity", Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Item requires valid quantity");
+        }
+        // If no image is provided, since image column cannot be null, provide placeholder image
+        if (imageByteArray == null) {
+            Bitmap placeholderBitmap =  BitmapFactory.decodeResource(getContext().getResources(),
+                    R.drawable.placeholder_thumbnail);
+            imageByteArray = Utils.convertBitmapToByteArray(placeholderBitmap);
+            values.put(ItemEntry.COLUMN_ITEM_IMAGE, imageByteArray);
         }
 
         // Insert the item into database with the value given
@@ -197,10 +208,20 @@ public class ItemProvider extends ContentProvider {
             if (price == null || price < 0) {
                 throw new IllegalArgumentException("Item requires a valid price");
             }
-        }if (values.containsKey(ItemEntry.COLUMN_ITEM_QUANTITY)) {
+        }
+        if (values.containsKey(ItemEntry.COLUMN_ITEM_QUANTITY)) {
             Integer quantity = values.getAsInteger(ItemEntry.COLUMN_ITEM_QUANTITY);
             if (quantity == null || quantity < 0) {
                 throw new IllegalArgumentException("Item requires a valid quantity");
+            }
+        }
+        if (values.containsKey(ItemEntry.COLUMN_ITEM_IMAGE)) {
+            byte[] imageByteArray = values.getAsByteArray(ItemEntry.COLUMN_ITEM_IMAGE);
+            if (imageByteArray == null) {
+                Bitmap placeholderBitmap =  BitmapFactory.decodeResource(getContext().getResources(),
+                        R.drawable.placeholder_thumbnail);
+                imageByteArray = Utils.convertBitmapToByteArray(placeholderBitmap);
+                values.put(ItemEntry.COLUMN_ITEM_IMAGE, imageByteArray);
             }
         }
 

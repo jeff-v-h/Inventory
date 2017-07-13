@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="@dimen/activity_margin"
-    tools:context=".EditorActivity">
+    tools:context=".DetailActivity">
 
     <!-- Overview category -->
     <LinearLayout
@@ -140,8 +140,8 @@
 
             <ImageView
                 android:id="@+id/edit_image_view"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:scaleType="fitCenter"/>
         </LinearLayout>
     </LinearLayout>

@@ -23,7 +23,7 @@ public class ItemDbHelper extends SQLiteOpenHelper {
             + ItemEntry.COLUMN_ITEM_SUPPLIER + " TEXT, "
             + ItemEntry.COLUMN_ITEM_PRICE + " INTEGER NOT NULL, "
             + ItemEntry.COLUMN_ITEM_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
-            + ItemEntry.COLUMN_ITEM_IMAGE + " BLOB);";
+            + ItemEntry.COLUMN_ITEM_IMAGE + " BLOB NOT NULL);";
 
     /** Default constructor */
     public ItemDbHelper(Context context) { super(context, DATABASE_NAME, null, DATABASE_VERSION); }

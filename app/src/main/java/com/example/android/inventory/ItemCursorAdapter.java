@@ -2,6 +2,8 @@ package com.example.android.inventory;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.android.inventory.data.ItemContract.ItemEntry;
+import com.example.android.inventory.data.Utils;
 
 /**
  * {@link ItemCursorAdapter} is an adapter for a listView that uses a {@link Cursor} of item
@@ -69,22 +71,24 @@ public class ItemCursorAdapter extends CursorAdapter {
             supplier = context.getString(R.string.unknown_supplier);
         }
 
-        // Images load asynchronously, which means when image loading completes at that time
-        // listView adapter uses old imageView to hold and display image.
-        Glide.with(context).load(imageByteArray).into(imageView);
-        //Glide.with(context).load(imageByteArray).placeholder(R.drawable.placeholder_thumbnail).into(imageView);
-        // TODO: 9/07/2017 fix way to use .placeholder for Glide
-        // TODO: 9/07/2017 Images still change while scrolling
-        /*
-        if (imageByteArray != null) {
-            Bitmap image = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
-            imageView.setImageBitmap(image);
-        } */
-
-        // Populate the fields with extracted data (image view is done above)
+        // Populate the fields with extracted data
         nameView.setText(name);
         supplierView.setText(supplier);
         priceView.setText(String.valueOf(price));
         quantityView.setText(String.valueOf(quantity));
+
+        // Images load asynchronously, which means when image loading completes at that time listView
+        // adapter uses old imageView to hold and display image. If/else is required here to make
+        // sure images don't keep loading into wrong views. If/else is also needed to ensure image
+        // is not null, or else app crashes attempting to get length of null array
+        if (imageByteArray != null) {
+            Bitmap image = Utils.convertByteArrayToBitmap(imageByteArray);
+            imageView.setImageBitmap(image);
+        } else {
+            Bitmap placeholderBitmap =  BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.placeholder_thumbnail);
+            imageView.setImageBitmap(placeholderBitmap);
+        }
+
     }
 }
