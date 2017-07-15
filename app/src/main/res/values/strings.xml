@@ -54,5 +54,6 @@
     <string name="dummy_data_name">Box</string>
     <string name="dummy_data_supplier">Bunnings Warehouse</string>
     <string name="product_image_description">Image of the product</string>
+    <string name="button_sale">Sale</string>
 
 </resources>

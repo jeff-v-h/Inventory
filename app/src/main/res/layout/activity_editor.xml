@@ -95,20 +95,33 @@
             style="@style/CategoryStyle" />
 
         <!-- Input fields -->
-        <RelativeLayout
+        <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="2"
+            android:orientation="horizontal"
             android:paddingLeft="4dp">
 
             <!-- Quantity field -->
+            <Button
+                android:id="@+id/button_minus"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:text="-"/>
             <EditText
                 android:id="@+id/edit_quantity"
                 android:hint="@string/hint_quantity"
                 android:inputType="number"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 style="@style/EditorFieldStyle" />
+            <Button
+                android:id="@+id/button_plus"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:text="+"/>
 
-        </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Image category -->

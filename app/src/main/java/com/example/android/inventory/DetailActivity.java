@@ -43,6 +43,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private EditText mSupplierEditText;
     private EditText mPriceEditText;
     private EditText mQuantityEditText;
+    private Button mMinusButton;
+    private Button mPlusButton;
     private Button mImageButton;
     private ImageView mImageView;
 
@@ -87,9 +89,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mSupplierEditText = (EditText) findViewById(R.id.edit_supplier);
         mPriceEditText = (EditText) findViewById(R.id.edit_price);
         mQuantityEditText = (EditText) findViewById(R.id.edit_quantity);
+        mMinusButton = (Button) findViewById(R.id.button_minus);
+        mPlusButton = (Button) findViewById(R.id.button_plus);
         mImageButton = (Button) findViewById(R.id.edit_image_button);
         mImageView = (ImageView) findViewById(R.id.edit_image_view);
 
+        // Set actions for each button
+        mMinusButton.setOnClickListener(minusListener);
+        mPlusButton.setOnClickListener(plusListener);
         mImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,9 +115,51 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mSupplierEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
-
+        mMinusButton.setOnTouchListener(mTouchListener);
+        mPlusButton.setOnTouchListener(mTouchListener);
+        mImageButton.setOnTouchListener(mTouchListener);
     }
 
+    /** Method for when minus button is clicked: decrease quantity by 1 */
+    private View.OnClickListener minusListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String quantityString = mQuantityEditText.getText().toString().trim();
+            if (TextUtils.isEmpty(quantityString)) {
+                mQuantityEditText.setText("0");
+            } else {
+                int quantityAsInt = Integer.parseInt(quantityString);
+                if (quantityAsInt == 0) {
+                    Toast.makeText(DetailActivity.this, "Unable to decrease quantity below 0",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    quantityAsInt--;
+                    mQuantityEditText.setText(Integer.toString(quantityAsInt));
+                }
+            }
+        }
+    };
+
+    /** Method for when plus button is clicked: increase quantity by 1 */
+    private View.OnClickListener plusListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String quantityString = mQuantityEditText.getText().toString().trim();
+            int quantityAsInt;
+            if (TextUtils.isEmpty(quantityString)) {
+                quantityAsInt = 1;
+            } else {
+                quantityAsInt = Integer.parseInt(quantityString);
+                quantityAsInt++;
+            }
+            mQuantityEditText.setText(Integer.toString(quantityAsInt));
+        }
+    };
+
+    /**
+     * When intent has been sent to pick an image, if request is OK, select an image from phone
+     * to be viewed below the button.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request code we're responding to and Make sure the request was successful

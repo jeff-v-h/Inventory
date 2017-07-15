@@ -4,13 +4,16 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:padding="@dimen/activity_margin" >
+    <!--  descendantFocusability required so that each list item can still be clicked while there
+    is a descendant button -->
 
     <ImageView
         android:id="@+id/image"
         android:contentDescription="@string/product_image_description"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         android:layout_marginRight="16dp"
         android:layout_weight="1.25"
         android:scaleType="fitCenter" />
@@ -71,6 +74,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="20"/>
+        <Button
+            android:id="@+id/button_sale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:text="@string/button_sale"/>
     </LinearLayout>
 
 </LinearLayout>

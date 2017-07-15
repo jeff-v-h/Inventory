@@ -1,16 +1,22 @@
 package com.example.android.inventory;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.v4.widget.CursorAdapter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.inventory.data.ItemContract.ItemEntry;
 import com.example.android.inventory.data.Utils;
@@ -43,7 +49,7 @@ public class ItemCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(final View view, final Context context, Cursor cursor) {
         // Find fields to populate in inflated template
         TextView nameView = (TextView) view.findViewById(R.id.product_name);
         TextView supplierView = (TextView) view.findViewById(R.id.supplier);
@@ -52,6 +58,7 @@ public class ItemCursorAdapter extends CursorAdapter {
         ImageView imageView = (ImageView) view.findViewById(R.id.image);
 
         // Find index for each data column to be able to extract properties from cursor
+        int idColumnIndex = cursor.getColumnIndex(ItemEntry._ID);
         int nameColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_NAME);
         int supplierColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_SUPPLIER);
         int priceColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_PRICE);
@@ -59,10 +66,11 @@ public class ItemCursorAdapter extends CursorAdapter {
         int imageColumnIndex = cursor.getColumnIndex(ItemEntry.COLUMN_ITEM_IMAGE);
 
         // Extract properties from cursor using the above column indexes
+        int id = cursor.getInt(idColumnIndex);
         String name = cursor.getString(nameColumnIndex);
         String supplier = cursor.getString(supplierColumnIndex);
         Integer price = cursor.getInt(priceColumnIndex);
-        Integer quantity = cursor.getInt(quantityColumnIndex);
+        final Integer quantity = cursor.getInt(quantityColumnIndex);
         byte[] imageByteArray = cursor.getBlob(imageColumnIndex);
 
         // If the columns which are allowed to be null (supplier & image) are empty/null,
@@ -89,6 +97,27 @@ public class ItemCursorAdapter extends CursorAdapter {
                     R.drawable.placeholder_thumbnail);
             imageView.setImageBitmap(placeholderBitmap);
         }
+
+        final Uri currentItemUri = ContentUris.withAppendedId(ItemEntry.CONTENT_URI, id);
+
+        // Set action for clicking on button: when clicked, quantity is decreased by 1
+        Button saleButton = (Button) view.findViewById(R.id.button_sale);
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentResolver resolver = view.getContext().getContentResolver();
+                ContentValues values = new ContentValues();
+                if (quantity > 0) {
+                    int q = quantity;
+                    q--;
+                    values.put(ItemEntry.COLUMN_ITEM_QUANTITY, q);
+                    resolver.update(currentItemUri, values, null, null);
+                    resolver.notifyChange(currentItemUri, null);
+                } else {
+                    Toast.makeText(context, "Item out of stock", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
 }
